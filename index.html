@@ -120,15 +120,6 @@
             box-shadow: 0 0 14px rgba(255,255,255,0.75);
         }
 
-        .progress-text {
-            font-family: 'Inter', monospace;
-            font-size: 1.55rem;
-            font-weight: 600;
-            min-width: 78px;
-            text-align: right;
-            color: #fff;
-        }
-
         /* Muzyka */
         audio { display: none; }
     </style>
@@ -153,7 +144,6 @@
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
         </div>
-        <div class="progress-text" id="percent">0%</div>
     </div>
 
     <!-- Muzyka w tle -->
@@ -254,7 +244,6 @@
             document.body.addEventListener('click', () => audio.play(), { once: true });
         });
 
-        console.log('%c✅ Ekran wczytywania – teraz pokazuje WSZYSTKO z okienka GMod + prawdziwy pasek', 'color:#fff; font-size:16px; font-family:monospace');
     </script>
 </body>
 </html>
