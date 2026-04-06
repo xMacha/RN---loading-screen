@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wczytywanie • [REDACTED] Network • SCPRP</title>
+    <title>Wczytywanie • Twój Serwer GMod</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
         :root {
             --text: #ffffff;
-            --accent: #ffffff;
         }
 
         * {
@@ -28,23 +27,19 @@
             position: relative;
         }
 
-        /* === TŁO SLIDESHOW (przyciemnione) === */
+        /* Tło slideshow (przyciemnione) */
         #slideshow {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 1;
             overflow: hidden;
         }
 
         .slide {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
             opacity: 0;
@@ -58,16 +53,14 @@
         #slideshow::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.65);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.68);
             z-index: 2;
             pointer-events: none;
         }
 
-        /* === LOGO NA ŚRODKU === */
+        /* Logo na środku */
         .logo-container {
             position: absolute;
             top: 50%;
@@ -84,25 +77,21 @@
             transition: transform 0.4s ease;
         }
 
-        .logo:hover {
-            transform: scale(1.04);
-        }
-
-        /* === JEDEN NAPIS ZE STATUSU OD GMOD (powyżej paska) === */
+        /* Status – dokładnie to co pokazuje okienko GMod */
         .status-container {
             position: absolute;
-            bottom: 92px;
+            bottom: 105px;
             left: 40px;
             z-index: 4;
-            font-size: 1.45rem;
+            font-size: 1.55rem;
             font-weight: 500;
-            opacity: 0.95;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            max-width: 75%;
+            opacity: 0.98;
             text-align: left;
-            max-width: 70%;
         }
 
-        /* === PROSTY BIAŁY PASEK POSTĘPU (bez zaokrągleń, grubszy) === */
+        /* PASEK – grubszy + niezaładowana część przezroczysto-szara */
         .progress-wrapper {
             position: absolute;
             bottom: 40px;
@@ -111,14 +100,14 @@
             z-index: 4;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 22px;
         }
 
         .progress-container {
             flex: 1;
-            height: 12px; /* grubość jak prosiłeś */
-            background: rgba(255,255,255,0.15);
-            border-radius: 0; /* ZERO zaokrągleń */
+            height: 18px;                    /* grubszy pasek */
+            background: rgba(255,255,255,0.14); /* przezroczysto-szara niezaładowana część */
+            border-radius: 0;
             overflow: hidden;
             position: relative;
         }
@@ -127,23 +116,21 @@
             height: 100%;
             width: 0%;
             background: #ffffff;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 12px rgba(255,255,255,0.7);
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 14px rgba(255,255,255,0.75);
         }
 
         .progress-text {
             font-family: 'Inter', monospace;
-            font-size: 1.45rem;
+            font-size: 1.55rem;
             font-weight: 600;
-            min-width: 72px;
+            min-width: 78px;
             text-align: right;
             color: #fff;
         }
 
-        /* === MUZYKA === */
-        audio {
-            display: none;
-        }
+        /* Muzyka */
+        audio { display: none; }
     </style>
 </head>
 <body>
@@ -151,17 +138,17 @@
     <!-- Tło slideshow -->
     <div id="slideshow"></div>
 
-    <!-- Logo na środku -->
+    <!-- Logo -->
     <div class="logo-container">
         <img src="logoniepng.png" alt="Logo Serwera" class="logo" onerror="this.src='https://via.placeholder.com/460x200/111/fff?text=LOGO';">
     </div>
 
-    <!-- JEDEN status od GMod (bez żadnej tabeli i losowych rzeczy) -->
+    <!-- Status – dokładnie to co w okienku GMod -->
     <div class="status-container" id="loading-status">
-        Wczytywanie...
+        Oczekiwanie na serwer...
     </div>
 
-    <!-- Biały pasek na dole -->
+    <!-- Pasek postępu -->
     <div class="progress-wrapper">
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
@@ -181,86 +168,93 @@
             "slide2.jpg",
             "slide3.jpg",
             "slide4.jpg",
-            // dodaj więcej jeśli chcesz
+            // dodaj więcej linijek jeśli masz więcej slajdów
         ];
 
         const slideshowContainer = document.getElementById('slideshow');
-        
-        slides.forEach((slideSrc, index) => {
+        slides.forEach((src, i) => {
             const div = document.createElement('div');
             div.className = 'slide';
-            div.style.backgroundImage = `url('${slideSrc}')`;
-            if (index === 0) div.classList.add('active');
+            div.style.backgroundImage = `url('${src}')`;
+            if (i === 0) div.classList.add('active');
             slideshowContainer.appendChild(div);
         });
 
-        let currentSlide = 0;
-        function nextSlide() {
-            const allSlides = document.querySelectorAll('.slide');
-            allSlides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            allSlides[currentSlide].classList.add('active');
-        }
-        setInterval(nextSlide, 15000);
-
-        // ====================== PASEK POSTĘPU ======================
-        let progress = 0;
-        const progressBar = document.getElementById('progress-bar');
-        const percentText = document.getElementById('percent');
-        const statusText = document.getElementById('loading-status');
-
-        // Fake progress tylko do testowania w przeglądarce (bez losowych addonów)
-        const progressInterval = setInterval(() => {
-            progress = Math.min(progress + (Math.random() * 8 + 4), 100);
-            progressBar.style.width = `${progress}%`;
-            percentText.textContent = `${Math.floor(progress)}%`;
-
-            if (progress >= 100) {
-                clearInterval(progressInterval);
-                percentText.textContent = "100%";
-            }
-        }, 130);
+        let current = 0;
+        setInterval(() => {
+            const all = document.querySelectorAll('.slide');
+            all[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            all[current].classList.add('active');
+        }, 15000);
 
         // ====================== DANE OD GMOD ======================
-        // 1. GameDetails – oficjalna funkcja wywoływana przez GMod
-        window.GameDetails = function(serverName, serverURL, mapName, maxPlayers, steamID, gamemode) {
-            // Pokazujemy dokładnie to co podaje GMod (mapa + ewentualnie inne info)
-            statusText.textContent = `Wczytywanie mapy: ${mapName}`;
+        const statusText = document.getElementById('loading-status');
+        const progressBar = document.getElementById('progress-bar');
+        const percentText = document.getElementById('percent');
+
+        let totalFiles = 0;
+        let neededFiles = 0;
+
+        function updateRealProgress() {
+            if (totalFiles > 0) {
+                const progress = Math.max(0, Math.min(100, ((totalFiles - neededFiles) / totalFiles) * 100));
+                progressBar.style.width = `${progress}%`;
+                percentText.textContent = `${Math.floor(progress)}%`;
+            }
+        }
+
+        // 1. Główny status (dokładnie to co pokazuje okienko GMod)
+        window.SetStatusChanged = function(status) {
+            if (status && typeof status === 'string') {
+                statusText.textContent = status;
+            }
         };
 
-        // 2. postMessage – na wypadek gdyby serwer wysyłał customowy status
+        // 2. Pobieranie konkretnego pliku
+        window.DownloadingFile = function(fileName) {
+            if (fileName && typeof fileName === 'string') {
+                statusText.textContent = `Pobieranie: ${fileName}`;
+            }
+        };
+
+        // 3. Informacje o serwerze / mapie
+        window.GameDetails = function(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            statusText.textContent = `Wczytywanie mapy: ${mapname}`;
+        };
+
+        // 4. Liczba plików do pobrania
+        window.SetFilesTotal = function(total) {
+            totalFiles = total;
+            updateRealProgress();
+        };
+
+        window.SetFilesNeeded = function(needed) {
+            neededFiles = needed;
+            updateRealProgress();
+        };
+
+        // Fallback – postMessage od GMod (działa na niektórych serwerach)
         window.addEventListener('message', function(e) {
             if (!e.data) return;
 
-            // Progress (standard w GMod)
             if (typeof e.data.progress === 'number') {
-                progress = Math.min(Math.max(e.data.progress, 0), 100);
-                progressBar.style.width = `${progress}%`;
-                percentText.textContent = `${Math.floor(progress)}%`;
-
-                if (progress >= 100) {
-                    percentText.textContent = "100%";
-                }
+                progressBar.style.width = `${Math.min(100, Math.max(0, e.data.progress))}%`;
+                percentText.textContent = `${Math.floor(e.data.progress)}%`;
             }
-
-            // Ewentualny customowy status od serwera (jeśli ktoś doda w Lua)
-            if (e.data.message || e.data.status || e.data.loading) {
-                const msg = e.data.message || e.data.status || e.data.loading;
-                if (msg && typeof msg === 'string') {
-                    statusText.textContent = msg;
-                }
+            if (e.data.status || e.data.message) {
+                statusText.textContent = e.data.status || e.data.message;
             }
         });
 
         // ====================== MUZYKA ======================
         const audio = document.getElementById('bg-music');
         audio.volume = 0.45;
-
         audio.play().catch(() => {
             document.body.addEventListener('click', () => audio.play(), { once: true });
         });
 
-        console.log('%c✅ Ekran wczytywania poprawiony (czarno-biały, prosty pasek, tylko status od GMod)', 'color:#fff; font-size:16px; font-family:monospace');
+        console.log('%c✅ Ekran wczytywania – teraz pokazuje WSZYSTKO z okienka GMod + prawdziwy pasek', 'color:#fff; font-size:16px; font-family:monospace');
     </script>
 </body>
 </html>
