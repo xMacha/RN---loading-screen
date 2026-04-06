@@ -55,7 +55,6 @@
             opacity: 1;
         }
 
-        /* Przyciemnienie całego tła */
         #slideshow::after {
             content: '';
             position: absolute;
@@ -89,44 +88,21 @@
             transform: scale(1.04);
         }
 
-        /* === SZCZEGÓŁY WCZYTYWANIA (prawy górny róg nad paskiem) === */
-        .details {
+        /* === JEDEN NAPIS ZE STATUSU OD GMOD (powyżej paska) === */
+        .status-container {
             position: absolute;
-            bottom: 110px;
-            right: 40px;
+            bottom: 92px;
+            left: 40px;
             z-index: 4;
-            text-align: right;
-            font-size: 1.05rem;
-            line-height: 1.5;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 14px 24px;
-            border-radius: 8px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.15);
-            min-width: 320px;
-        }
-
-        .details-line {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .details-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .label {
-            opacity: 0.75;
+            font-size: 1.45rem;
             font-weight: 500;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+            text-align: left;
+            max-width: 70%;
         }
 
-        .value {
-            font-weight: 600;
-            color: #fff;
-        }
-
-        /* === BIAŁY PASEK POSTĘPU NA DOLE === */
+        /* === PROSTY BIAŁY PASEK POSTĘPU (bez zaokrągleń, grubszy) === */
         .progress-wrapper {
             position: absolute;
             bottom: 40px;
@@ -140,9 +116,9 @@
 
         .progress-container {
             flex: 1;
-            height: 6px;
+            height: 12px; /* grubość jak prosiłeś */
             background: rgba(255,255,255,0.15);
-            border-radius: 9999px;
+            border-radius: 0; /* ZERO zaokrągleń */
             overflow: hidden;
             position: relative;
         }
@@ -157,14 +133,14 @@
 
         .progress-text {
             font-family: 'Inter', monospace;
-            font-size: 1.35rem;
+            font-size: 1.45rem;
             font-weight: 600;
-            min-width: 68px;
+            min-width: 72px;
             text-align: right;
             color: #fff;
         }
 
-        /* === MUZYKA (ukryty player) === */
+        /* === MUZYKA === */
         audio {
             display: none;
         }
@@ -180,19 +156,12 @@
         <img src="logoniepng.png" alt="Logo Serwera" class="logo" onerror="this.src='https://via.placeholder.com/460x200/111/fff?text=LOGO';">
     </div>
 
-    <!-- Szczegóły wczytywania (prawy dolny róg, nad paskiem) -->
-    <div class="details" id="details">
-        <div class="details-line">
-            <span class="label">WCZYTYWANIE</span>
-            <span class="value" id="loading-item">mapy...</span>
-        </div>
-        <div class="details-line">
-            <span class="label">AKTUALNY ADDON</span>
-            <span class="value" id="current-addon">brak</span>
-        </div>
+    <!-- JEDEN status od GMod (bez żadnej tabeli i losowych rzeczy) -->
+    <div class="status-container" id="loading-status">
+        Wczytywanie...
     </div>
 
-    <!-- Biały pasek postępu na samym dole -->
+    <!-- Biały pasek na dole -->
     <div class="progress-wrapper">
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
@@ -200,21 +169,19 @@
         <div class="progress-text" id="percent">0%</div>
     </div>
 
-    <!-- Tło muzyka -->
+    <!-- Muzyka w tle -->
     <audio id="bg-music" loop>
         <source src="music.mp3" type="audio/mpeg">
-        Twój odtwarzacz nie obsługuje audio.
     </audio>
 
     <script>
         // ====================== SLIDESHOW ======================
-        // Dodaj tutaj swoje slajdy (pliki muszą być w głównym folderze repo)
         const slides = [
             "slide1.jpg",
             "slide2.jpg",
             "slide3.jpg",
             "slide4.jpg",
-            // dodaj więcej linijek jeśli chcesz więcej slajdów
+            // dodaj więcej jeśli chcesz
         ];
 
         const slideshowContainer = document.getElementById('slideshow');
@@ -234,76 +201,66 @@
             currentSlide = (currentSlide + 1) % slides.length;
             allSlides[currentSlide].classList.add('active');
         }
-        setInterval(nextSlide, 15000); // 15 sekund na slajd
+        setInterval(nextSlide, 15000);
 
-        // ====================== PASEK POSTĘPU + SZCZEGÓŁY ======================
+        // ====================== PASEK POSTĘPU ======================
         let progress = 0;
         const progressBar = document.getElementById('progress-bar');
         const percentText = document.getElementById('percent');
-        const loadingItem = document.getElementById('loading-item');
-        const currentAddon = document.getElementById('current-addon');
+        const statusText = document.getElementById('loading-status');
 
-        // Fake progress + losowe detale (działa od razu w przeglądarce)
-        const loadingMessages = [
-            "mapy głównej", "modeli graczy", "dodatków serwerowych",
-            "skryptów Lua", "tekstur", "dźwięków", "pojazdów"
-        ];
-        const addonNames = ["DarkRP Base", "Custom Weapons", "Advanced Duplicator 2", "Wiremod", "VCMod"];
-
+        // Fake progress tylko do testowania w przeglądarce (bez losowych addonów)
         const progressInterval = setInterval(() => {
-            const increase = Math.random() * 9 + 3;
-            progress = Math.min(progress + increase, 100);
-
+            progress = Math.min(progress + (Math.random() * 8 + 4), 100);
             progressBar.style.width = `${progress}%`;
             percentText.textContent = `${Math.floor(progress)}%`;
-
-            // losowa zmiana szczegółów
-            if (Math.random() > 0.7) {
-                loadingItem.textContent = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-            }
-            if (Math.random() > 0.85) {
-                currentAddon.textContent = addonNames[Math.floor(Math.random() * addonNames.length)];
-            }
 
             if (progress >= 100) {
                 clearInterval(progressInterval);
                 percentText.textContent = "100%";
-                loadingItem.textContent = "GOTOWE";
-                currentAddon.textContent = "wszystko wczytane";
             }
-        }, 110);
+        }, 130);
 
-        // Obsługa prawdziwych danych z GMod (postMessage)
+        // ====================== DANE OD GMOD ======================
+        // 1. GameDetails – oficjalna funkcja wywoływana przez GMod
+        window.GameDetails = function(serverName, serverURL, mapName, maxPlayers, steamID, gamemode) {
+            // Pokazujemy dokładnie to co podaje GMod (mapa + ewentualnie inne info)
+            statusText.textContent = `Wczytywanie mapy: ${mapName}`;
+        };
+
+        // 2. postMessage – na wypadek gdyby serwer wysyłał customowy status
         window.addEventListener('message', function(e) {
             if (!e.data) return;
 
+            // Progress (standard w GMod)
             if (typeof e.data.progress === 'number') {
                 progress = Math.min(Math.max(e.data.progress, 0), 100);
                 progressBar.style.width = `${progress}%`;
                 percentText.textContent = `${Math.floor(progress)}%`;
+
+                if (progress >= 100) {
+                    percentText.textContent = "100%";
+                }
             }
 
-            if (e.data.loading) {
-                loadingItem.textContent = e.data.loading;
-            }
-            if (e.data.addon) {
-                currentAddon.textContent = e.data.addon;
+            // Ewentualny customowy status od serwera (jeśli ktoś doda w Lua)
+            if (e.data.message || e.data.status || e.data.loading) {
+                const msg = e.data.message || e.data.status || e.data.loading;
+                if (msg && typeof msg === 'string') {
+                    statusText.textContent = msg;
+                }
             }
         });
 
         // ====================== MUZYKA ======================
         const audio = document.getElementById('bg-music');
-        audio.volume = 0.45; // możesz zmienić głośność (0.0 - 1.0)
+        audio.volume = 0.45;
 
-        // Autoplay (działa w większości przeglądarek i w GMod)
         audio.play().catch(() => {
-            // fallback - kliknięcie na ekranie uruchomi muzykę
-            document.body.addEventListener('click', () => {
-                audio.play();
-            }, { once: true });
+            document.body.addEventListener('click', () => audio.play(), { once: true });
         });
 
-        console.log('%c✅ Minimalistyczny ekran wczytywania (czarno-biały) gotowy!', 'color:#fff; font-size:16px; font-family:monospace');
+        console.log('%c✅ Ekran wczytywania poprawiony (czarno-biały, prosty pasek, tylko status od GMod)', 'color:#fff; font-size:16px; font-family:monospace');
     </script>
 </body>
 </html>
