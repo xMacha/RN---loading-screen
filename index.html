@@ -91,33 +91,32 @@
             text-align: left;
         }
 
-        /* PASEK – grubszy + niezaładowana część przezroczysto-szara */
-        .progress-wrapper {
+        /* LINK DO DISCORDA – lewy górny róg */
+        .discord-link {
             position: absolute;
-            bottom: 40px;
+            top: 30px;
             left: 40px;
-            right: 40px;
-            z-index: 4;
+            z-index: 5;
             display: flex;
             align-items: center;
-            gap: 22px;
+            gap: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: all 0.2s ease;
         }
 
-        .progress-container {
-            flex: 1;
-            height: 18px;                    /* grubszy pasek */
-            background: rgba(255,255,255,0.14); /* przezroczysto-szara niezaładowana część */
-            border-radius: 0;
-            overflow: hidden;
-            position: relative;
+        .discord-link:hover {
+            opacity: 1;
+            text-decoration: underline;
+            transform: translateY(-1px);
         }
 
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: #ffffff;
-            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 14px rgba(255,255,255,0.75);
+        .discord-icon {
+            width: 28px;
+            height: 28px;
         }
 
         /* Muzyka */
@@ -129,22 +128,24 @@
     <!-- Tło slideshow -->
     <div id="slideshow"></div>
 
-    <!-- Logo -->
+    <!-- Logo na środku -->
     <div class="logo-container">
         <img src="logoniepng.png" alt="Logo Serwera" class="logo" onerror="this.src='https://via.placeholder.com/460x200/111/fff?text=LOGO';">
     </div>
 
-    <!-- Status – dokładnie to co w okienku GMod -->
+    <!-- Status od GMod -->
     <div class="status-container" id="loading-status">
         Oczekiwanie na serwer...
     </div>
 
-    <!-- Pasek postępu -->
-    <div class="progress-wrapper">
-        <div class="progress-container">
-            <div id="progress-bar" class="progress-bar"></div>
-        </div>
-    </div>
+    <!-- LINK DO DISCORDA (lewy górny róg) -->
+    <a href="https://discord.gg/twojserwer" target="_blank" class="discord-link">
+        <!-- Ikonka Discord (biała, inline SVG) -->
+        <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M20.317 4.492a19.562 19.562 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.445.863-.608 1.249a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.562 19.562 0 0 0 3.677 4.5a.078.078 0 0 0-.032.027C.533 9.094-.32 13.555.099 17.961a.078.078 0 0 0 .032.027 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.077.077 0 0 0-.041-.108 13.07 13.07 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.322 10.322 0 0 0 .372-.18.076.076 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.076.076 0 0 1 .077.01c.12.064.245.13.373.18a.077.077 0 0 1-.007.128 12.3 12.3 0 0 1-1.873.892.077.077 0 0 0-.041.108c.36.698.772 1.363 1.225 1.993a.078.078 0 0 0 .084.028 19.9 19.9 0 0 0 5.993-3.03.078.078 0 0 0 .032-.027c.492-4.564-.83-8.52-3.51-12.442a.077.077 0 0 0-.032-.027zM8.02 15.33c-1.182 0-2.157-1.085-2.157-2.419 0-1.334.984-2.419 2.157-2.419 1.182 0 2.157 1.085 2.157 2.419 0 1.334-.984 2.419-2.157 2.419zm7.96 0c-1.182 0-2.157-1.085-2.157-2.419 0-1.334.984-2.419 2.157-2.419 1.183 0 2.157 1.085 2.157 2.419 0 1.334-.975 2.419-2.157 2.419z"/>
+        </svg>
+        Discord
+    </a>
 
     <!-- Muzyka w tle -->
     <audio id="bg-music" loop>
@@ -180,58 +181,26 @@
 
         // ====================== DANE OD GMOD ======================
         const statusText = document.getElementById('loading-status');
-        const progressBar = document.getElementById('progress-bar');
-        const percentText = document.getElementById('percent');
 
-        let totalFiles = 0;
-        let neededFiles = 0;
-
-        function updateRealProgress() {
-            if (totalFiles > 0) {
-                const progress = Math.max(0, Math.min(100, ((totalFiles - neededFiles) / totalFiles) * 100));
-                progressBar.style.width = `${progress}%`;
-                percentText.textContent = `${Math.floor(progress)}%`;
-            }
-        }
-
-        // 1. Główny status (dokładnie to co pokazuje okienko GMod)
         window.SetStatusChanged = function(status) {
             if (status && typeof status === 'string') {
                 statusText.textContent = status;
             }
         };
 
-        // 2. Pobieranie konkretnego pliku
         window.DownloadingFile = function(fileName) {
             if (fileName && typeof fileName === 'string') {
                 statusText.textContent = `Pobieranie: ${fileName}`;
             }
         };
 
-        // 3. Informacje o serwerze / mapie
-        window.GameDetails = function(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-            statusText.textContent = `Pobieranie informacji o serwerze`;
+        window.GameDetails = function(servername, serverurl, mapname) {
+            statusText.textContent = `Wczytywanie mapy: ${mapname}`;
         };
 
-        // 4. Liczba plików do pobrania
-        window.SetFilesTotal = function(total) {
-            totalFiles = total;
-            updateRealProgress();
-        };
-
-        window.SetFilesNeeded = function(needed) {
-            neededFiles = needed;
-            updateRealProgress();
-        };
-
-        // Fallback – postMessage od GMod (działa na niektórych serwerach)
+        // Fallback – postMessage
         window.addEventListener('message', function(e) {
             if (!e.data) return;
-
-            if (typeof e.data.progress === 'number') {
-                progressBar.style.width = `${Math.min(100, Math.max(0, e.data.progress))}%`;
-                percentText.textContent = `${Math.floor(e.data.progress)}%`;
-            }
             if (e.data.status || e.data.message) {
                 statusText.textContent = e.data.status || e.data.message;
             }
@@ -244,6 +213,7 @@
             document.body.addEventListener('click', () => audio.play(), { once: true });
         });
 
+        console.log('%c✅ Pasek usunięty • Link do Discorda dodany w lewym górnym rogu', 'color:#fff; font-size:16px; font-family:monospace');
     </script>
 </body>
 </html>
