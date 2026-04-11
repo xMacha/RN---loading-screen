@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wczytywanie • [REDACTED] Network</title>
+    <title>Wczytywanie • [REDACTED] Networks</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
@@ -77,20 +77,6 @@
             transition: transform 0.4s ease;
         }
 
-        /* Status – dokładnie to co pokazuje okienko GMod */
-        .status-container {
-            position: absolute;
-            bottom: 105px;
-            left: 40px;
-            z-index: 4;
-            font-size: 1.55rem;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            max-width: 75%;
-            opacity: 0.98;
-            text-align: left;
-        }
-
         /* LINK DO DISCORDA – lewy górny róg */
         .discord-link {
             position: absolute;
@@ -131,11 +117,6 @@
     <!-- Logo na środku -->
     <div class="logo-container">
         <img src="logoniepng.png" alt="Logo Serwera" class="logo" onerror="this.src='https://via.placeholder.com/460x200/111/fff?text=LOGO';">
-    </div>
-
-    <!-- Status od GMod -->
-    <div class="status-container" id="loading-status">
-        Oczekiwanie na serwer...
     </div>
 
     <!-- LINK DO DISCORDA (lewy górny róg) -->
@@ -179,33 +160,6 @@
             all[current].classList.add('active');
         }, 15000);
 
-        // ====================== DANE OD GMOD ======================
-        const statusText = document.getElementById('loading-status');
-
-        window.SetStatusChanged = function(status) {
-            if (status && typeof status === 'string') {
-                statusText.textContent = status;
-            }
-        };
-
-        window.DownloadingFile = function(fileName) {
-            if (fileName && typeof fileName === 'string') {
-                statusText.textContent = `Pobieranie: ${fileName}`;
-            }
-        };
-
-        window.GameDetails = function(servername, serverurl, mapname) {
-            statusText.textContent = `Wczytywanie mapy: ${mapname}`;
-        };
-
-        // Fallback – postMessage
-        window.addEventListener('message', function(e) {
-            if (!e.data) return;
-            if (e.data.status || e.data.message) {
-                statusText.textContent = e.data.status || e.data.message;
-            }
-        });
-
         // ====================== MUZYKA ======================
         const audio = document.getElementById('bg-music');
         audio.volume = 0.45;
@@ -213,7 +167,6 @@
             document.body.addEventListener('click', () => audio.play(), { once: true });
         });
 
-        console.log('%c✅ Pasek usunięty • Link do Discorda dodany w lewym górnym rogu', 'color:#fff; font-size:16px; font-family:monospace');
     </script>
 </body>
 </html>
